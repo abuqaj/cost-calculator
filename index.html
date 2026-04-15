@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airfreight Cost Calculator · Kenya → Netherlands</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --dark: #1A1A2E;
+    --teal: #00B894;
+    --teal-light: #D4F5EC;
+    --teal-dark: #065F46;
+    --amber: #E17B2E;
+    --amber-light: #FDF0E3;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --text: #2D2D2D;
+    --muted: #6B7280;
+    --border: rgba(0,0,0,0.09);
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2rem);
+  }
+
+  .page { max-width: 900px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: clamp(1.75rem, 4vw, 3rem);
+  }
+  .eyebrow {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.7rem, 5vw, 2.8rem);
+    line-height: 1.15;
+    color: var(--dark);
+  }
+  .header h1 em { font-style: italic; color: var(--amber); }
+  .header-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-weight: 300;
+  }
+  .header-line {
+    width: 48px; height: 3px;
+    background: var(--amber);
+    margin: 1rem auto 0;
+    border-radius: 2px;
+  }
+
+  /* ── ROUTE PILL ── */
+  .route {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 2vw, 1rem);
+    background: var(--dark);
+    color: #fff;
+    border-radius: 100px;
+    padding: 0.65rem 1.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .route-dot { width: 7px; height: 7px; background: var(--amber); border-radius: 50%; flex-shrink:0; }
+  .route-line {
+    width: 60px; height: 1px;
+    background: rgba(255,255,255,0.2);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .route-line::after {
+    content: '✈';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ── INPUT SECTION ── */
+  .inputs-section {
+    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .inputs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  .input-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    padding: clamp(1rem, 3vw, 1.5rem);
+    transition: border-color 0.2s;
+  }
+  .input-card:focus-within { border-color: rgba(0,184,148,0.4); }
+
+  .input-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .box-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-a { background: var(--amber); }
+  .dot-b { background: var(--teal); }
+
+  .box-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .tag-a { color: var(--amber); }
+  .tag-b { color: var(--teal); }
+
+  .input-card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--dark);
+    margin-bottom: 1.1rem;
+    line-height: 1.2;
+  }
+
+  .field { margin-bottom: 0.9rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .input-wrap {
+    display: flex;
+    align-items: center;
+    background: #F9F8F5;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input-wrap:focus-within {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(0,184,148,0.12);
+  }
+
+  .input-prefix, .input-suffix {
+    padding: 0 10px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 500;
+    background: transparent;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .input-wrap input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark);
+    outline: none;
+    min-width: 0;
+    text-align: right;
+  }
+  .input-wrap input::-webkit-inner-spin-button,
+  .input-wrap input::-webkit-outer-spin-button { opacity: 0.4; }
+
+  /* ── RESULTS ── */
+  .results-section { margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .result-card {
+    border-radius: 16px;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card.card-a {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+  }
+  .result-card.card-b {
+    background: var(--dark);
+    color: white;
+  }
+
+  .winner-pill {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+    margin-bottom: 0.6rem;
+  }
+  .winner-pill.show { background: var(--teal); color: white; }
+  .winner-pill.hidden { opacity: 0; }
+
+  .result-box-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+  .card-a .result-box-tag { color: var(--amber); }
+  .card-b .result-box-tag { color: var(--teal); }
+
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+    margin-bottom: 1.1rem;
+    line-height: 1.3;
+    color: inherit;
+  }
+  .card-b .result-title { color: white; }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+    gap: 0.5rem;
+  }
+  .card-b .result-row { border-color: rgba(255,255,255,0.1); }
+  .result-row:last-of-type { border-bottom: none; }
+
+  .r-label {
+    font-size: clamp(0.68rem, 1.4vw, 0.76rem);
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .card-b .r-label { color: rgba(255,255,255,0.5); }
+
+  .r-value {
+    font-size: clamp(0.76rem, 1.6vw, 0.85rem);
+    font-weight: 600;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .total-block {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .card-a .total-block { background: var(--amber-light); }
+  .card-b .total-block { background: rgba(0,184,148,0.15); }
+
+  .total-lbl {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 0.15rem;
+  }
+  .card-b .total-lbl { color: rgba(255,255,255,0.45); }
+
+  .total-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    line-height: 1;
+  }
+  .card-a .total-num { color: var(--amber); }
+  .card-b .total-num { color: var(--teal); }
+
+  .total-sub {
+    font-size: 0.68rem;
+    margin-top: 0.15rem;
+    color: var(--muted);
+  }
+  .card-b .total-sub { color: rgba(255,255,255,0.4); }
+
+  /* ── VERDICT ── */
+  .verdict-bar {
+    border-radius: 16px;
+    padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.75rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2rem);
+    flex-wrap: wrap;
+    transition: background 0.3s;
+  }
+  .verdict-bar.b-wins { background: var(--dark); }
+  .verdict-bar.a-wins { background: #7C3A1E; }
+  .verdict-bar.tie    { background: #374151; }
+
+  .verdict-big {
+    flex-shrink: 0;
+    text-align: center;
+    min-width: 90px;
+  }
+  .verdict-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .verdict-bar.b-wins .verdict-num { color: var(--teal); }
+  .verdict-bar.a-wins .verdict-num { color: var(--amber); }
+  .verdict-bar.tie    .verdict-num { color: #9CA3AF; }
+
+  .verdict-unit {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.2rem;
+  }
+
+  .verdict-divider {
+    width: 1px; height: 54px;
+    background: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+
+  .verdict-text { color: white; flex: 1; min-width: 160px; }
+  .verdict-text strong {
+    display: block;
+    font-size: clamp(0.88rem, 2.2vw, 1.05rem);
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+  }
+  .verdict-text p {
+    font-size: clamp(0.73rem, 1.5vw, 0.83rem);
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .verdict-stats {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2rem);
+    flex-wrap: wrap;
+  }
+  .v-stat { text-align: center; }
+  .v-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-variant-numeric: tabular-nums;
+  }
+  .verdict-bar.b-wins .v-stat-num { color: var(--teal); }
+  .verdict-bar.a-wins .v-stat-num { color: var(--amber); }
+  .verdict-bar.tie    .v-stat-num { color: #9CA3AF; }
+  .v-stat-lbl {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.1rem;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-block {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.75rem);
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .compare-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .compare-header span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+  }
+  .compare-header span:first-child { text-align: left; }
+
+  .cmp-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px;
+    gap: 0.5rem;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .cmp-row:last-child { border-bottom: none; }
+
+  .cmp-label { font-size: clamp(0.72rem, 1.4vw, 0.8rem); color: var(--muted); }
+
+  .cmp-val {
+    text-align: center;
+    font-size: clamp(0.72rem, 1.4vw, 0.8rem);
+    font-weight: 600;
+    padding: 0.28rem 0.4rem;
+    border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.25s, color 0.25s;
+  }
+  .cmp-val.better { background: var(--teal-light); color: var(--teal-dark); }
+  .cmp-val.worse  { background: var(--red-light);  color: #991B1B; }
+  .cmp-val.equal  { background: #F3F4F6; color: var(--muted); }
+
+  /* ── EFFICIENCY BARS ── */
+  .eff-block {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.75rem);
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .eff-lbl {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .bar-group { margin-bottom: 1rem; }
+  .bar-group:last-child { margin-bottom: 0; }
+
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: clamp(0.72rem, 1.4vw, 0.8rem);
+    margin-bottom: 0.4rem;
+    gap: 0.5rem;
+  }
+  .bar-meta span:first-child { font-weight: 500; }
+  .bar-meta span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .bar-track {
+    height: 8px;
+    background: #F3F4F6;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    min-width: 4px;
+  }
+  .fill-a { background: var(--amber); }
+  .fill-b { background: var(--teal); }
+
+  /* ── FOOTNOTE ── */
+  .footnote {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 560px) {
+    .inputs-grid, .results-grid { grid-template-columns: 1fr; }
+    .verdict-divider { display: none; }
+    .verdict-stats { justify-content: center; }
+    .compare-header, .cmp-row { grid-template-columns: 1fr 72px 72px; }
+  }
+
+  /* ── ANIMATE IN ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .inputs-section  { animation: fadeUp 0.4s ease both; }
+  .results-section { animation: fadeUp 0.5s ease 0.1s both; }
+  .compare-block   { animation: fadeUp 0.5s ease 0.15s both; }
+  .eff-block       { animation: fadeUp 0.5s ease 0.2s both; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <p class="eyebrow">Airfreight Cost Calculator</p>
+    <h1>Kenya → Netherlands<br><em>Box Comparison</em></h1>
+    <p class="header-sub">Enter your own values — results update instantly</p>
+    <div class="header-line"></div>
+  </div>
+
+  <!-- ROUTE -->
+  <div class="route">
+    <span>🇰🇪 Nairobi</span>
+    <div class="route-dot"></div>
+    <div class="route-line"></div>
+    <div class="route-dot"></div>
+    <span>🇳🇱 Amsterdam</span>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="inputs-section">
+    <p class="section-label">Enter your values</p>
+    <div class="inputs-grid">
+
+      <!-- BOX A INPUTS -->
+      <div class="input-card">
+        <div class="input-card-header">
+          <div class="box-dot dot-a"></div>
+          <span class="box-tag tag-a">Box A</span>
+        </div>
+        <p class="input-card-title" id="a-title">400 stems · 12 kg</p>
+
+        <div class="field">
+          <label for="a-stems">Number of stems</label>
+          <div class="input-wrap">
+            <span class="input-suffix">stems</span>
+            <input type="number" id="a-stems" value="400" min="1" step="1">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="a-weight">Box weight</label>
+          <div class="input-wrap">
+            <span class="input-suffix">kg</span>
+            <input type="number" id="a-weight" value="12" min="0.1" step="0.1">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="a-purchase">Purchase price / stem</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input type="number" id="a-purchase" value="0.12" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="a-freight">Airfreight rate / kg</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" id="a-freight" value="3.00" min="0" step="0.01">
+          </div>
+        </div>
+      </div>
+
+      <!-- BOX B INPUTS -->
+      <div class="input-card">
+        <div class="input-card-header">
+          <div class="box-dot dot-b"></div>
+          <span class="box-tag tag-b">Box B</span>
+        </div>
+        <p class="input-card-title" id="b-title">600 stems · 16 kg</p>
+
+        <div class="field">
+          <label for="b-stems">Number of stems</label>
+          <div class="input-wrap">
+            <span class="input-suffix">stems</span>
+            <input type="number" id="b-stems" value="600" min="1" step="1">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="b-weight">Box weight</label>
+          <div class="input-wrap">
+            <span class="input-suffix">kg</span>
+            <input type="number" id="b-weight" value="16" min="0.1" step="0.1">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="b-purchase">Purchase price / stem</label>
+          <div class="input-wrap">
+            <span class="input-prefix">€</span>
+            <input type="number" id="b-purchase" value="0.10" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="b-freight">Airfreight rate / kg</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="number" id="b-freight" value="3.00" min="0" step="0.01">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section">
+    <p class="section-label">Results</p>
+
+    <div class="results-grid">
+
+      <!-- RESULT A -->
+      <div class="result-card card-a">
+        <div class="winner-pill hidden" id="winner-a">Best value</div>
+        <p class="result-box-tag">Box A</p>
+        <p class="result-title" id="r-a-title">400 stems · 12 kg</p>
+
+        <div class="result-row">
+          <span class="r-label">Purchase / stem</span>
+          <span class="r-value" id="r-a-purchase-stem">€0.120</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Total purchase</span>
+          <span class="r-value" id="r-a-purchase-total">€48.00</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Airfreight total</span>
+          <span class="r-value" id="r-a-freight-total">$36.00</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Freight / stem</span>
+          <span class="r-value" id="r-a-freight-stem">$0.090</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Stems per kg</span>
+          <span class="r-value" id="r-a-density">33.3</span>
+        </div>
+
+        <div class="total-block">
+          <p class="total-lbl">Total cost per stem</p>
+          <p class="total-num" id="r-a-total">€0.210</p>
+          <p class="total-sub">purchase + freight</p>
+        </div>
+      </div>
+
+      <!-- RESULT B -->
+      <div class="result-card card-b">
+        <div class="winner-pill show" id="winner-b">Best value</div>
+        <p class="result-box-tag">Box B</p>
+        <p class="result-title" id="r-b-title">600 stems · 16 kg</p>
+
+        <div class="result-row">
+          <span class="r-label">Purchase / stem</span>
+          <span class="r-value" id="r-b-purchase-stem">€0.100</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Total purchase</span>
+          <span class="r-value" id="r-b-purchase-total">€60.00</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Airfreight total</span>
+          <span class="r-value" id="r-b-freight-total">$48.00</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Freight / stem</span>
+          <span class="r-value" id="r-b-freight-stem">$0.080</span>
+        </div>
+        <div class="result-row">
+          <span class="r-label">Stems per kg</span>
+          <span class="r-value" id="r-b-density">37.5</span>
+        </div>
+
+        <div class="total-block">
+          <p class="total-lbl">Total cost per stem</p>
+          <p class="total-num" id="r-b-total">€0.180</p>
+          <p class="total-sub">purchase + freight</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VERDICT -->
+    <div class="verdict-bar b-wins" id="verdict-bar">
+      <div class="verdict-big">
+        <p class="verdict-num" id="verdict-diff">€0.030</p>
+        <p class="verdict-unit" id="verdict-unit">saved per stem</p>
+      </div>
+      <div class="verdict-divider"></div>
+      <div class="verdict-text">
+        <strong id="verdict-title">Box B is 14.3% cheaper per stem</strong>
+        <p id="verdict-desc">Lower purchase price combined with better freight efficiency gives Box B a clear cost advantage per stem landed in the Netherlands.</p>
+      </div>
+      <div class="verdict-stats">
+        <div class="v-stat">
+          <p class="v-stat-num" id="verdict-pct">14.3%</p>
+          <p class="v-stat-lbl">cost advantage</p>
+        </div>
+        <div class="v-stat">
+          <p class="v-stat-num" id="verdict-winner-density">37.5</p>
+          <p class="v-stat-lbl">stems / kg (winner)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEAD TO HEAD -->
+  <div class="compare-block">
+    <p class="section-label">Head-to-head · per stem</p>
+    <div class="compare-header">
+      <span>Metric</span>
+      <span>Box A</span>
+      <span>Box B</span>
+    </div>
+
+    <div class="cmp-row">
+      <span class="cmp-label">Purchase cost / stem</span>
+      <span class="cmp-val" id="cmp-a-pur">€0.120</span>
+      <span class="cmp-val" id="cmp-b-pur">€0.100</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">Airfreight / stem</span>
+      <span class="cmp-val" id="cmp-a-fr">$0.090</span>
+      <span class="cmp-val" id="cmp-b-fr">$0.080</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">Total cost / stem</span>
+      <span class="cmp-val" id="cmp-a-tot">€0.210</span>
+      <span class="cmp-val" id="cmp-b-tot">€0.180</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">Stems per kg</span>
+      <span class="cmp-val" id="cmp-a-dens">33.3</span>
+      <span class="cmp-val" id="cmp-b-dens">37.5</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-label">Total freight per box</span>
+      <span class="cmp-val" id="cmp-a-frtot">$36.00</span>
+      <span class="cmp-val" id="cmp-b-frtot">$48.00</span>
+    </div>
+  </div>
+
+  <!-- EFFICIENCY -->
+  <div class="eff-block">
+    <p class="eff-lbl">Freight efficiency — stems per kg</p>
+
+    <div class="bar-group">
+      <div class="bar-meta">
+        <span id="eff-a-label">Box A · 400 stems / 12 kg</span>
+        <span id="eff-a-val">33.3 stems/kg</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill fill-a" id="bar-a" style="width:88%"></div></div>
+    </div>
+
+    <div class="bar-group">
+      <div class="bar-meta">
+        <span id="eff-b-label">Box B · 600 stems / 16 kg</span>
+        <span id="eff-b-val">37.5 stems/kg</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill fill-b" id="bar-b" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <p class="footnote">
+    Airfreight in USD · Purchase prices in EUR · Exchange rate not applied<br>
+    Excludes handling, customs, cooling &amp; phytosanitary costs
+  </p>
+
+</div>
+
+<script>
+  const ids = {
+    aStems: 'a-stems', aWeight: 'a-weight', aPurchase: 'a-purchase', aFreight: 'a-freight',
+    bStems: 'b-stems', bWeight: 'b-weight', bPurchase: 'b-purchase', bFreight: 'b-freight',
+  };
+
+  function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  function set(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+  function cls(id, ...classes) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('better','worse','equal');
+    classes.forEach(c => el.classList.add(c));
+  }
+
+  function calc() {
+    // Read inputs
+    const aS = val('a-stems'), aW = val('a-weight'), aP = val('a-purchase'), aF = val('a-freight');
+    const bS = val('b-stems'), bW = val('b-weight'), bP = val('b-purchase'), bF = val('b-freight');
+
+    if (!aS || !aW || !bS || !bW) return;
+
+    // Compute
+    const aFreightTotal   = aW * aF;
+    const bFreightTotal   = bW * bF;
+    const aFreightPerStem = aFreightTotal / aS;
+    const bFreightPerStem = bFreightTotal / bS;
+    const aPurchaseTotal  = aS * aP;
+    const bPurchaseTotal  = bS * bP;
+    const aDensity        = aS / aW;
+    const bDensity        = bS / bW;
+    const aTotalPerStem   = aP + aFreightPerStem;
+    const bTotalPerStem   = bP + bFreightPerStem;
+
+    const diff    = Math.abs(aTotalPerStem - bTotalPerStem);
+    const winner  = aTotalPerStem < bTotalPerStem ? 'A' : bTotalPerStem < aTotalPerStem ? 'B' : 'tie';
+    const loser   = winner === 'A' ? bTotalPerStem : aTotalPerStem;
+    const pct     = loser > 0 ? (diff / loser * 100) : 0;
+
+    // Update subtitles
+    set('a-title', `${aS} stems · ${aW} kg`);
+    set('b-title', `${bS} stems · ${bW} kg`);
+    set('r-a-title', `${aS} stems · ${aW} kg`);
+    set('r-b-title', `${bS} stems · ${bW} kg`);
+
+    // Result card A
+    set('r-a-purchase-stem',  `€${aP.toFixed(3)}`);
+    set('r-a-purchase-total', `€${aPurchaseTotal.toFixed(2)}`);
+    set('r-a-freight-total',  `$${aFreightTotal.toFixed(2)}`);
+    set('r-a-freight-stem',   `$${aFreightPerStem.toFixed(3)}`);
+    set('r-a-density',        `${aDensity.toFixed(1)}`);
+    set('r-a-total',          `€${aTotalPerStem.toFixed(3)}`);
+
+    // Result card B
+    set('r-b-purchase-stem',  `€${bP.toFixed(3)}`);
+    set('r-b-purchase-total', `€${bPurchaseTotal.toFixed(2)}`);
+    set('r-b-freight-total',  `$${bFreightTotal.toFixed(2)}`);
+    set('r-b-freight-stem',   `$${bFreightPerStem.toFixed(3)}`);
+    set('r-b-density',        `${bDensity.toFixed(1)}`);
+    set('r-b-total',          `€${bTotalPerStem.toFixed(3)}`);
+
+    // Winner badges
+    const pillA = document.getElementById('winner-a');
+    const pillB = document.getElementById('winner-b');
+    pillA.className = 'winner-pill ' + (winner === 'A' ? 'show' : 'hidden');
+    pillB.className = 'winner-pill ' + (winner === 'B' ? 'show' : 'hidden');
+
+    // Verdict bar
+    const bar = document.getElementById('verdict-bar');
+    bar.className = 'verdict-bar ' + (winner === 'A' ? 'a-wins' : winner === 'B' ? 'b-wins' : 'tie');
+
+    if (winner === 'tie') {
+      set('verdict-diff',  '€0.000');
+      set('verdict-unit',  'difference per stem');
+      set('verdict-title', 'Both boxes cost the same per stem');
+      set('verdict-desc',  'With the current values, Box A and Box B land at identical cost per stem.');
+      set('verdict-pct',   '0%');
+      set('verdict-winner-density', Math.max(aDensity, bDensity).toFixed(1));
+    } else {
+      const wLabel = winner === 'A' ? 'Box A' : 'Box B';
+      const wDensity = winner === 'A' ? aDensity : bDensity;
+      set('verdict-diff',  `€${diff.toFixed(3)}`);
+      set('verdict-unit',  'saved per stem');
+      set('verdict-title', `${wLabel} is ${pct.toFixed(1)}% cheaper per stem`);
+      set('verdict-desc',  `${wLabel} offers a lower total cost per stem when combining purchase price and airfreight. Every stem transported saves €${diff.toFixed(3)} compared to the other box.`);
+      set('verdict-pct',   `${pct.toFixed(1)}%`);
+      set('verdict-winner-density', wDensity.toFixed(1));
+    }
+
+    // Head to head coloring
+    const better = (aVal, bVal, aId, bId) => {
+      if (aVal < bVal) { cls(aId,'better'); cls(bId,'worse'); }
+      else if (bVal < aVal) { cls(aId,'worse'); cls(bId,'better'); }
+      else { cls(aId,'equal'); cls(bId,'equal'); }
+    };
+    better(aP,             bP,             'cmp-a-pur',   'cmp-b-pur');
+    better(aFreightPerStem,bFreightPerStem,'cmp-a-fr',    'cmp-b-fr');
+    better(aTotalPerStem,  bTotalPerStem,  'cmp-a-tot',   'cmp-b-tot');
+    // density: higher is better (more stems per kg = more efficient)
+    if (aDensity > bDensity) { cls('cmp-a-dens','better'); cls('cmp-b-dens','worse'); }
+    else if (bDensity > aDensity) { cls('cmp-a-dens','worse'); cls('cmp-b-dens','better'); }
+    else { cls('cmp-a-dens','equal'); cls('cmp-b-dens','equal'); }
+    // freight total: neutral (just info)
+    cls('cmp-a-frtot','equal'); cls('cmp-b-frtot','equal');
+
+    set('cmp-a-pur',   `€${aP.toFixed(3)}`);
+    set('cmp-b-pur',   `€${bP.toFixed(3)}`);
+    set('cmp-a-fr',    `$${aFreightPerStem.toFixed(3)}`);
+    set('cmp-b-fr',    `$${bFreightPerStem.toFixed(3)}`);
+    set('cmp-a-tot',   `€${aTotalPerStem.toFixed(3)}`);
+    set('cmp-b-tot',   `€${bTotalPerStem.toFixed(3)}`);
+    set('cmp-a-dens',  `${aDensity.toFixed(1)}`);
+    set('cmp-b-dens',  `${bDensity.toFixed(1)}`);
+    set('cmp-a-frtot', `$${aFreightTotal.toFixed(2)}`);
+    set('cmp-b-frtot', `$${bFreightTotal.toFixed(2)}`);
+
+    // Efficiency bars
+    const maxD = Math.max(aDensity, bDensity) || 1;
+    document.getElementById('bar-a').style.width = `${(aDensity/maxD*100).toFixed(1)}%`;
+    document.getElementById('bar-b').style.width = `${(bDensity/maxD*100).toFixed(1)}%`;
+    set('eff-a-label', `Box A · ${aS} stems / ${aW} kg`);
+    set('eff-b-label', `Box B · ${bS} stems / ${bW} kg`);
+    set('eff-a-val',   `${aDensity.toFixed(1)} stems/kg`);
+    set('eff-b-val',   `${bDensity.toFixed(1)} stems/kg`);
+  }
+
+  // Attach listeners
+  Object.values(ids).forEach(id => {
+    document.getElementById(id).addEventListener('input', calc);
+  });
+
+  // Init
+  calc();
+</script>
+</body>
+</html>
